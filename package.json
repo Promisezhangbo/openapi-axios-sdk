@@ -1,0 +1,96 @@
+{
+  "name": "openapi-axios-sdk",
+  "version": "0.1.0",
+  "description": "Generate fully-typed Axios SDKs from OpenAPI / Swagger specs. Multi-spec runtime isolation (BASE / token / headers don't pollute each other), incremental cache, defineConfig + CLI. Built on top of @hey-api/openapi-ts.",
+  "keywords": [
+    "axios",
+    "code-generator",
+    "codegen",
+    "hey-api",
+    "openapi",
+    "openapi3",
+    "sdk",
+    "sdk-generator",
+    "swagger",
+    "ts",
+    "typescript"
+  ],
+  "homepage": "https://github.com/Promisezhangbo/openapi-axios-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/Promisezhangbo/openapi-axios-sdk/issues"
+  },
+  "license": "MIT",
+  "author": "Promisezhangbo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Promisezhangbo/openapi-axios-sdk.git"
+  },
+  "bin": {
+    "openapi-gen": "./bin/openapi-gen.mjs"
+  },
+  "files": [
+    "bin",
+    "scripts",
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime.d.ts",
+      "import": "./dist/runtime.js",
+      "default": "./dist/runtime.js"
+    },
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "import": "./dist/config.js",
+      "default": "./dist/config.js"
+    }
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "pnpm typecheck && pnpm lint && pnpm fmt:check && pnpm test",
+    "prepublishOnly": "pnpm clean && pnpm check && pnpm build",
+    "release:dry": "pnpm clean && pnpm build && pnpm pack --pack-destination /tmp",
+    "release": "pnpm publish"
+  },
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^12.1.0",
+    "@hey-api/client-axios": "0.9.1",
+    "@hey-api/openapi-ts": "0.94.5",
+    "axios": "^1.7.9",
+    "jiti": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "oxfmt": "^0.48.0",
+    "oxlint": "^1.63.0",
+    "tsup": "^8.3.5",
+    "typescript": "~5.9.3",
+    "vitest": "^4.1.5"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "packageManager": "pnpm@10.33.4"
+}

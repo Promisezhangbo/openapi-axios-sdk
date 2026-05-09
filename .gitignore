@@ -1,0 +1,29 @@
+# build & deps
+dist/
+node_modules/
+*.tgz
+.e2e/
+
+# test & coverage
+coverage/
+.vitest-cache/
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# editor
+.idea/
+.vscode/
+
+# os
+.DS_Store
+Thumbs.db
+
+# env
+.env
+.env.*
+!.env.example
