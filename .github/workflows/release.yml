@@ -11,8 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      # 用于 npm provenance(增强 supply chain 信任度)。
-      id-token: write
+      # npm provenance 依赖 GitHub Actions + 公共源仓库；私有仓库会 422，故不启用 `--provenance`。
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,9 +44,9 @@ jobs:
       - name: Build
         run: pnpm build
 
-      # `--no-git-checks` 让 CI 跳过本地 git 状态校验;
-      # `--provenance` 给发布的 tarball 打上 npm provenance attestation。
+      # `--no-git-checks` 让 CI 跳过本地 git 状态校验。
+      # 私有仓库勿加 `--provenance`：npm 当前仅支持「公共源仓库」校验 sigstore provenance。
       - name: Publish to npm
-        run: pnpm publish --no-git-checks --provenance --access public
+        run: pnpm publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

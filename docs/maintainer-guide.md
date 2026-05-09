@@ -144,7 +144,13 @@ pnpm dlx openapi-gen --help
 5. 点击确认运行
 6. 等待流程完成：
    - `install` / `typecheck` / `lint` / `fmt:check` / `test` / `build`
-   - 最后执行 `pnpm publish --no-git-checks --provenance --access public`
+   - 最后执行 `pnpm publish --no-git-checks --access public`
+
+### npm provenance（sigstore）
+
+- npm 通过 GitHub Actions 发布并带 **`--provenance`** 时，要求**源仓库在 GitHub 上为 Public**。私有仓库会报 `422`（Unsupported GitHub Actions source repository visibility: "private"）。
+- 若要保持**私有仓库**：不要加 `--provenance`（本仓库 Release 工作流已按此配置）。
+- 若希望 npm 页面展示 provenance：把仓库改为 **Public**，并在 `pnpm publish` 中恢复 `--provenance`，同时为 job 赋予 `permissions.id-token: write`。
 
 ### 结果校验
 
