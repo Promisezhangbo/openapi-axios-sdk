@@ -33,7 +33,7 @@ cd openapi-axios-sdk
 pnpm install
 ```
 
-> 仓库通过 `package.json#packageManager` 锁定 `pnpm@10.33.4`（兼容 Node `>=18.17`）。
+> 仓库通过 `package.json#packageManager` 锁定 `pnpm@10.33.4`（兼容 Node `>=20.19`）。
 
 2. 登录 npm：`npm login`，确认 `npm whoami`。
 3. 检查包名是否可用：`npm view openapi-axios-sdk`。
