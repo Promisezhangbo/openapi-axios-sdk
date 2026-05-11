@@ -189,7 +189,7 @@ npm view openapi-axios-sdk dist-tags
 ### 常见注意事项
 
 - 手动触发发布时，工作流不会自动帮你改版本号；版本号应提前在代码里更新并提交
-- 如果该版本已存在，`pnpm publish` 会失败（这是正常保护）
+- 如果该版本已存在，`pnpm publish` 会失败（这是正常保护）；npm 有时报 `403 … You cannot publish over the previously published versions`，**不是 token 坏了**，而是 registry 上已有该版本——在 `package.json` 里**升高 `version`**（并更新 `CHANGELOG.md`）后再发
 - 若你希望发布记录和代码版本严格对齐，建议发布后补推 tag：`git push --follow-tags`
 
 ## 发布前 Checklist

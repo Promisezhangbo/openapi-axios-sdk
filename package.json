@@ -1,6 +1,6 @@
 {
   "name": "openapi-axios-sdk",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Generate fully-typed Axios SDKs from OpenAPI / Swagger specs. Multi-spec runtime isolation (BASE / token / headers don't pollute each other), incremental cache, defineConfig + CLI. Built on top of @hey-api/openapi-ts.",
   "keywords": [
     "axios",

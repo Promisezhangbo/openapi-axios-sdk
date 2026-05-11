@@ -4,6 +4,13 @@
 
 ## Unreleased
 
+## 0.2.1
+
+`2026-05-09`
+
+- docs: README 文首补充「包的作用」与能力说明，便于首次阅读即了解用途
+- chore: `package.json` 使用 `bugs.email` 与 `author` 邮箱作为反馈渠道，移除 `homepage` 与 `bugs.url`
+
 ## 0.1.0
 
 `2026-05-09`
