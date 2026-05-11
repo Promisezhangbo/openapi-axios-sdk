@@ -14,6 +14,9 @@
 # 全量检查：类型 + lint + 格式 + 单测
 pnpm check
 
+# 发布前：检查通过后自动升版本（再提交 CHANGELOG 等后执行；会跑 `pnpm version`，默认带 git 提交与 tag）
+pnpm release:prepare patch   # 或 minor、major、或精确号如 0.3.0
+
 # 仅构建
 pnpm build
 
@@ -23,9 +26,10 @@ pnpm release:dry
 
 当前脚本基线：
 
-- `lint` → `oxlint`
-- `fmt` / `fmt:check` → `oxfmt`
-- `test` / `test:watch` → `vitest`
+- `lint` → `oxlint`；自动修：`pnpm lint --fix`
+- `fmt` → `oxfmt`；只检查不写入：`pnpm fmt --check`
+- `test` / `test:watch` → `vitest run` / `vitest`
+- `release:prepare` → `pnpm check` 通过后执行 `pnpm version <…>`
 - `prepublishOnly` → `pnpm clean && pnpm check && pnpm build`
 
 ## 一次性准备
@@ -47,11 +51,11 @@ pnpm install
 ## 修改发布指南（简版）
 
 1. 拉取最新代码
-2. 修改代码
-3. 检查测试代码（建议运行 `pnpm check`）
-4. 更新版本号（`pnpm version patch|minor|major|<exact-version>`）
-5. 提交代码到 GitHub（含 tag）
-6. 更新 npm 包（`pnpm release`）
+2. 修改代码，并更新 `CHANGELOG.md`
+3. 将改动与 changelog **先提交**（`pnpm version` 会再单独提交一次版本号，避免把未 staged 的杂项混进发布）
+4. 一条命令完成「检查 + 升版本号」：`pnpm release:prepare patch`（或 `minor` / `major` / `x.y.z`）
+5. `git push --follow-tags`
+6. 发 npm：`pnpm release`（或走 GitHub Actions Release 工作流）
 
 ## 发布流程
 
@@ -67,34 +71,29 @@ ls dist/
 pnpm release:dry
 tar -tzf /tmp/openapi-axios-sdk-*.tgz | sort
 
-# 4. 升版本（任选其一）
-pnpm version patch
-pnpm version minor
-pnpm version major
+# 4. 检查通过后升版本（推荐；等价于先 `pnpm check` 再 `pnpm version …`）
+pnpm release:prepare patch
+# 或：pnpm release:prepare minor | major | 1.0.1
 
-# 或指定精确版本号（完全可以这样用）
-pnpm version 1.0.1
-
-# 如果你没有走 pnpm version（比如手动改了 package.json），
-# 需要手动打 tag（tag 名建议带 v 前缀）
-git tag -a v1.0.1 -m "release: v1.0.1"
+# 若未用 release:prepare、而是手动改了 package.json，需要自行打 tag（建议 v 前缀）
+# git tag -a v1.0.1 -m "release: v1.0.1"
 
 # 5. 发布
 pnpm release
 
-# 6. 推 tag
+# 6. 推 tag（若第 4 步已生成）
 git push --follow-tags
 ```
 
 ### 版本命令说明
 
-- `pnpm version patch`：修复类发布，例如 `1.0.0 -> 1.0.1`
-- `pnpm version minor`：新增兼容功能，例如 `1.0.0 -> 1.1.0`
-- `pnpm version major`：不兼容变更，例如 `1.0.0 -> 2.0.0`
-- `pnpm version 1.0.1`：直接指定目标版本号（可替代 patch/minor/major）
+- `pnpm release:prepare patch`：先跑 `pnpm check`，再升补丁号，例如 `1.0.0 -> 1.0.1`
+- `pnpm release:prepare minor` / `major`：同上，语义版本 minor / major
+- `pnpm release:prepare 1.0.1`：检查通过后写入指定版本号
+- 仅升版本、不跑检查（不推荐）：`pnpm version patch` 等（与上同义，只是跳过 `check`）
 
-> `pnpm version ...` 默认会更新 `package.json` 并创建对应 git tag（如 `v1.0.1`）。
-> 若你是手动改版本号，则必须手动 `git tag`，否则发布流程里的 tag 触发与版本追踪会缺失。
+> `pnpm version …` / `release:prepare` 默认会更新 `package.json` 并创建对应 git 提交与 tag（如 `v1.0.1`）。若加 `--no-git-tag-version` 则只改版本字段。
+> 若完全手动改 `package.json` 版本，则必须手动 `git tag`，否则与流水线 tag 约定可能对不齐。
 
 ## 发布后验证
 

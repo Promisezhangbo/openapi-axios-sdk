@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+- chore: 新增 `pnpm release:prepare`（先 `check` 再 `pnpm version`）；用 `pnpm lint --fix`、`pnpm fmt --check` 替代 `lint:fix` / `fmt:check`
+
 ## 0.2.1
 
 `2026-05-09`
