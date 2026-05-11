@@ -15,12 +15,11 @@
     "ts",
     "typescript"
   ],
-  "homepage": "https://github.com/Promisezhangbo/openapi-axios-sdk#readme",
   "bugs": {
-    "url": "https://github.com/Promisezhangbo/openapi-axios-sdk/issues"
+    "email": "promise.zhangbo@gmail.com"
   },
   "license": "MIT",
-  "author": "Promisezhangbo",
+  "author": "Promisezhangbo <promise.zhangbo@gmail.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/Promisezhangbo/openapi-axios-sdk.git"

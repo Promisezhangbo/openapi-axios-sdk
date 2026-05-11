@@ -1,6 +1,18 @@
 # openapi-axios-sdk
 
-> 一句话：**把你的 API 文档（OpenAPI / Swagger）变成 TypeScript 里能直接调用的 axios 函数**，还带完整类型提示。多个 API 文档互不影响，各自有自己的地址、Token、请求头。
+## 包的作用
+
+**openapi-axios-sdk** 是业务项目里的**开发依赖**：根据 **OpenAPI 3.x / Swagger**（本地 yaml/json 或远程 URL）**自动生成**带完整 **TypeScript 类型** 的 **Axios 调用代码**。你在业务里 `import` 生成出的工厂与方法即可发请求，契约与文档一致；文档变更后重新生成即可同步代码侧。
+
+**本包帮你做到：**
+
+- **从文档到可调用代码**：路径、HTTP 方法、请求/响应体与 OpenAPI 对齐，少写手写 `axios` 样板和容易过时的类型。
+- **多份 API 互不干扰**：每份 spec 有独立的 **BASE、鉴权、默认请求头**，适合多后端、多微服务同时对接。
+- **贴近仓库里的用法**：`defineConfig` + `openapi.config.*`、命令行 **`openapi-gen`**；支持本地目录、多远程、生成缓存与离线拉文档等。
+
+底层生成基于 **[@hey-api/openapi-ts](https://github.com/hey-api/openapi-ts)**；本包在其上补齐多 spec 运行时隔离、统一配置与 CLI，方便在真实工程里落地。
+
+> 一句话：**把你的 API 文档变成 TypeScript 里能直接调用的 axios 函数**，还带完整类型提示；多份文档各自有地址、Token、请求头，互不影响。
 
 [![npm version](https://img.shields.io/npm/v/openapi-axios-sdk?style=flat-square)](https://www.npmjs.com/package/openapi-axios-sdk)
 [![downloads](https://img.shields.io/npm/dm/openapi-axios-sdk?style=flat-square)](https://www.npmjs.com/package/openapi-axios-sdk)
@@ -19,17 +31,18 @@
 
 ## 目录
 
-1. [安装](#安装)
-2. [配置文件 `openapi.config`（字段说明）](#配置文件-openapiconfig字段说明)
-3. [运行代码生成](#运行代码生成)
-4. [生成产物与导入路径](#生成产物与导入路径)
-5. [CI/CD：不提交生成代码时怎么办](#cicd不提交生成代码时怎么办)
-6. [类型使用方式](#类型使用方式)
-7. [请求使用方式](#请求使用方式)
-8. [运行时初始化 `OpenApi<Name>({ ... })`（全部可传字段）](#运行时初始化-openapiname--全部可传字段)
-9. [CLI](#cli)
-10. [常见问题（新手）](#常见问题新手)
-11. [延伸阅读](#延伸阅读)
+1. [包的作用](#包的作用)
+2. [安装](#安装)
+3. [配置文件 `openapi.config`（字段说明）](#配置文件-openapiconfig字段说明)
+4. [运行代码生成](#运行代码生成)
+5. [生成产物与导入路径](#生成产物与导入路径)
+6. [CI/CD：不提交生成代码时怎么办](#cicd不提交生成代码时怎么办)
+7. [类型使用方式](#类型使用方式)
+8. [请求使用方式](#请求使用方式)
+9. [运行时初始化 `OpenApi<Name>({ ... })`（全部可传字段）](#运行时初始化-openapiname--全部可传字段)
+10. [CLI](#cli)
+11. [常见问题（新手）](#常见问题新手)
+12. [延伸阅读](#延伸阅读)
 
 ---
 

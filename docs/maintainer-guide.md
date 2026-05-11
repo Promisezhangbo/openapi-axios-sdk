@@ -199,4 +199,4 @@ npm view openapi-axios-sdk dist-tags
 - [ ] `pnpm release:dry` tarball 清单无 `src/`
 - [ ] `CHANGELOG.md` 与 release notes 已更新
 - [ ] `npm whoami` 为可发布账号
-- [ ] `homepage` / `repository` / `bugs` 链接可访问
+- [ ] `repository` 可克隆；`bugs.email` / `author` 邮箱有效
