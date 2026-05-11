@@ -217,6 +217,36 @@ const { data } = await blogApi.listBlogs({
 });
 ```
 
+### 自定义请求拦截器（示例）
+
+每个 spec 各自有一个 **`openApiHttpClient`**（axios 实例），与本包内置的 **请求拦截**（`BASE`、`Authorization`、`HEADERS`、`withCredentials` 等，见生成目录里的 `openapi-http.gen.ts`）共用同一实例。你还可以再 `use` 自己的拦截器，一般只影响**这一份** spec，不会串到别的 OpenAPI。
+
+**从哪 import**：根目录的汇总 `index.ts` 只聚合了 `OpenApi<Name>` 等入口，**没有**再导出 `openApiHttpClient`；要从对应子目录拿，例如 `blog`：
+
+```ts
+import { AxiosHeaders } from 'axios';
+import { openApiHttpClient, OpenApiBlog } from '@/generated/openapi/blog-gen/index';
+
+// 典型场景：打日志、统一加 `X-Trace-Id`、在发请求前最后改 `config`
+// axios 会按注册顺序执行请求拦截器；本包在加载 `openapi-http.gen.ts` 时已注册一层，
+// 你在应用启动阶段再 `use`，多数情况下会排在后面执行（在自带鉴权/默认头注入之后）。
+openApiHttpClient.interceptors.request.use((config) => {
+  if (!config.headers) config.headers = new AxiosHeaders();
+  const h = config.headers instanceof AxiosHeaders ? config.headers : AxiosHeaders.from(config.headers);
+  if (!h.get('X-Trace-Id')) h.set('X-Trace-Id', crypto.randomUUID());
+  config.headers = h;
+  return config;
+});
+
+const blogApi = OpenApiBlog({
+  BASE: import.meta.env.VITE_BLOG_BASE,
+  token: () => localStorage.getItem('token') ?? '',
+});
+// 之后 `blogApi.xxx()` 的请求会走完整拦截链
+```
+
+若不想手写 `AxiosHeaders`，也可以只在 `config.headers` 是普通对象时合并字段；注意不要破坏已有头。响应侧同理可用 `openApiHttpClient.interceptors.response.use(...)`；若只想跳过本包内置的**全局错误上报**，可用同模块导出的 **`openApiSilent`** 包住一段异步逻辑（见生成文件内说明）。
+
 ---
 
 ## 运行时初始化 `OpenApi<Name>({ ... })`（全部可传字段）
