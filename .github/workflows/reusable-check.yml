@@ -1,0 +1,33 @@
+# 供 CI 与 Release 复用，避免两份脚本漂移。
+# Release 中 publish job 使用 `needs: <本工作流 job 名>`，保证未通过检查不会发包。
+name: Reusable check
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'Node.js version'
+        type: string
+        required: false
+        default: '20'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm fmt:check
+      - run: pnpm test
+      - run: pnpm build

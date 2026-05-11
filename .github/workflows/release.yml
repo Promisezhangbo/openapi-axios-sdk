@@ -7,7 +7,14 @@ on:
   workflow_dispatch:
 
 jobs:
+  # 与 CI 共用同一套检查；仅当本 job 成功后才执行 publish（逻辑上「先检查再发布」）。
+  check:
+    uses: ./.github/workflows/reusable-check.yml
+    with:
+      node-version: '20'
+
   publish:
+    needs: check
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -29,21 +36,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Type check
-        run: pnpm typecheck
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Format check
-        run: pnpm fmt:check
-
-      - name: Test
-        run: pnpm test
-
-      - name: Build
-        run: pnpm build
-
+      # `prepublishOnly` 仍会再跑 clean + check + build（npm 发布安全网）。
       # `--no-git-checks` 让 CI 跳过本地 git 状态校验。
       # 私有仓库勿加 `--provenance`：npm 当前仅支持「公共源仓库」校验 sigstore provenance。
       - name: Publish to npm
