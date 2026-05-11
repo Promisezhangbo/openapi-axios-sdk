@@ -1,6 +1,12 @@
 # 维护与发布指南
 
-这份文档面向仓库维护者，记录本仓库的自测、发布与 CI 约定。
+这份文档写给：**要改本仓库代码、发 npm 包、或配 GitHub 流水线的人**。
+
+如果你只是想在**自己的业务项目**里用 `openapi-axios-sdk` 生成接口代码，请直接看仓库根目录的 [`README.md`](../README.md)，不用读本篇。
+
+下面出现的 **`NPM_TOKEN`** 可以理解成：让 GitHub 的服务器代替你执行 `npm publish` 时用的「一把钥匙」，要在 npm 网站生成，再贴到 GitHub 仓库的 Secret 里（后文有步骤）。
+
+下文记录：本仓库怎么自测、怎么发版、CI / Release 各自干什么。
 
 ## 自测命令
 
@@ -121,9 +127,30 @@ pnpm dlx openapi-gen --help
 - CI：`.github/workflows/ci.yml`
 - 发布：`.github/workflows/release.yml`
 
+可以简单记：
+
+- **CI**：别人提 PR、或往 `main` 推代码时，自动跑检查（相当于「进门安检」）。
+- **Release**：要发 npm 包时跑；里面也会先跑一遍检查，**通过了才会真的 `publish`**，避免坏包发上去。
+
+再细一点：
+
+- **CI** 用 Node `20` 和 `22` 各跑一遍，脚本在 `.github/workflows/reusable-check.yml`。
+- **Release** 里先调同一套检查（默认 Node `20`），成功后再 `pnpm publish`。推 `v*` 标签**不会**自动再跑一遍 CI（因为 CI 只盯着 `main` 和 PR）。若你希望「只有合并进 main 且全绿过的代码才打 tag」，要在 GitHub 里给 `main` 开**分支保护**，让合并前必须通过 CI。
+
 发布工作流需要仓库 Secret：`NPM_TOKEN`。
 
 触发方式：`v*` tag push（例如 `pnpm version patch` 后 `git push --follow-tags`）。
+
+### `NPM_TOKEN` 怎么拿到、贴到哪（白话）
+
+1. 用浏览器登录 [npmjs.com](https://www.npmjs.com/)，进入 **Access Tokens**（访问令牌）。
+2. 新建 **Granular**（细粒度）或 **Automation** 类令牌，勾选能 **发布（publish）** 本包；若 npm 要求 2FA，按页面提示勾选「允许 CI 发布」一类选项（否则 GitHub 上会 403）。
+3. 复制生成出来的**一长串字符**（只显示一次，丢了就删了重建）。
+4. 打开 GitHub 上**本仓库** → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**。
+5. **Name** 填：`NPM_TOKEN`（必须和工作流里写的一致）。
+6. **Value** 粘贴刚才复制的令牌 → 保存。
+
+本地自己执行 `pnpm publish` 时，一般要在本机先 `npm login`，不需要配 GitHub Secret。
 
 ## GitHub 部署指南（手动触发发布）
 
@@ -142,9 +169,7 @@ pnpm dlx openapi-gen --help
 3. 点击 `Run workflow`
 4. Branch 选择 `main`
 5. 点击确认运行
-6. 等待流程完成：
-   - `install` / `typecheck` / `lint` / `fmt:check` / `test` / `build`
-   - 最后执行 `pnpm publish --no-git-checks --access public`
+6. 等待流程完成：先跑复用的 **Check**（与 CI 同源步骤），成功后再 `pnpm install` + `pnpm publish`（`prepublishOnly` 仍会再跑 `clean + check + build`）。
 
 ### npm provenance（sigstore）
 
