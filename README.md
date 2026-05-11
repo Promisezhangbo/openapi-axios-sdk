@@ -207,12 +207,12 @@ GitHub Actions 上示意（按你项目脚本名改）：
 import { OpenApiBlog } from '@/generated/openapi';
 
 const blogApi = OpenApiBlog({
-  BASE: import.meta.env.VITE_BLOG_BASE,
+  BASE: import.meta.env.VITE_BLOG_BASE, // https://api.xxx.com
   token: () => localStorage.getItem('token') ?? '',
 });
 
 // 下面方法名、body 字段名请打开你项目里的 sdk.gen.ts 对照着改
-const { data } = await blogApi.listKnowledgeBases({
+const { data } = await blogApi.listBlogs({
   body: { request_id: crypto.randomUUID() },
 });
 ```
